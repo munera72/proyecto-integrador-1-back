@@ -16,7 +16,7 @@ def create_image_zip(image_paths, output_zip_path):
                 print(f"Warning: {image_path} does not exist and will be skipped.")
 
 
-target_path = 'C:\\Users\\emanu\\Documents\\UdeA\\Material de estudio\\Proyecto integrador I\\Código\\back\\Reports\\test'
+target_path = 'C:\\Users\\emanu\\Documents\\UdeA\\Material de estudio\\Proyecto integrador I\\Código\\back\\Reports\\test\\\images.zip'
 image_paths = ['C:\\Users\\emanu\\Pictures\\Saved Pictures\\wallpaper1.jpeg']
 
 create_image_zip(image_paths, target_path)
