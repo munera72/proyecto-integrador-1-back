@@ -1,6 +1,6 @@
 import zipfile
 import os
-from config import settings  # Assuming you have a config file with this constant
+from config import settings
 
 
 def create_image_zip(image_paths, output_zip_path = settings.DEFAULT_TARGET_PATH):
