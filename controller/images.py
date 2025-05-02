@@ -12,7 +12,7 @@ router = APIRouter(prefix="/images", tags=["Images"])
 TEMP_DIR = Path("temp_uploads")
 TEMP_DIR.mkdir(exist_ok=True)
 
-@router.post("/")
+@router.post("/upload/")
 async def upload_images(files: List[UploadFile] = File(...)):
     saved_paths = []
 
@@ -26,10 +26,8 @@ async def upload_images(files: List[UploadFile] = File(...)):
 
         saved_paths.append(str(temp_path))
 
-    # Create ZIP
     create_image_zip(saved_paths)
 
-    # Optionally clean up temp files
     for path in saved_paths:
         os.remove(path)
 

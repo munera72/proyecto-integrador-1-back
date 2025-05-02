@@ -1,10 +1,9 @@
 import zipfile
 import os
+from config import settings  # Assuming you have a config file with this constant
 
-DEFAULT_TARGET_PATH = 'C:\\Users\\emanu\\Documents\\UdeA\\Material de estudio\\Proyecto integrador I\\Código\\back\\Reports\\test\\images.zip'
 
-
-def create_image_zip(image_paths, output_zip_path = DEFAULT_TARGET_PATH):
+def create_image_zip(image_paths, output_zip_path = settings.DEFAULT_TARGET_PATH):
 
     """
     Creates a .zip file containing the images specified in the image_paths list.
