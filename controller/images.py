@@ -40,7 +40,7 @@ async def upload_images(files: List[UploadFile] = File(...)):
     }
 
 
-@router.get("/download")
+@router.get("/download/")
 async def download_zip():
     if not os.path.exists(DEFAULT_TARGET_PATH):
         raise HTTPException(status_code=404, detail="ZIP file not found.")
