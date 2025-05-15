@@ -18,7 +18,6 @@ async def process_images(files):
     # proccessed_images = []
 
     for file in files:
-            # Generate a unique name to avoid collisions
             temp_filename = f"{uuid4()}_{file.filename}"
             temp_path = TEMP_DIR / temp_filename
             #originals_path = TEMP_DIR / "original" / temp_filename
@@ -42,5 +41,5 @@ async def process_images(files):
 def get_zip():
     zip_path = Path(DEFAULT_TARGET_PATH)
     if not zip_path.exists():
-        raise FileNotFoundError(f"ZIP file not found at {zip_path}")
+        raise FileNotFoundError(f"ZIP file not found")
     return str(zip_path)
