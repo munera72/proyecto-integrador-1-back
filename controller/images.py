@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from typing import List
-import os
 from fastapi.responses import FileResponse
 from service.images_service import process_images
 from service.images_service import get_zip
@@ -18,10 +17,10 @@ async def upload_images(files: List[UploadFile] = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/download/")
-async def download_zip():
+@router.get("/download/{report_name}")
+async def download_zip(report_name: str):
     try:
-        zip_path = get_zip()
+        zip_path = get_zip(report_name)
         return FileResponse(
             path=zip_path,
             media_type='application/zip',

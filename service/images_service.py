@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from config import settings
 from uuid import uuid4
@@ -12,6 +13,7 @@ TEMP_DIR.mkdir(exist_ok=True)
 
 async def process_images(files):
     saved_paths = []
+    timestamp = datetime.now().strftime("Report %d-%m-%Y %H-%M-%S")
 
     #here we will process the images with the model, yet to implement
     # original_images = []
@@ -28,18 +30,22 @@ async def process_images(files):
 
             saved_paths.append(str(temp_path))
 
-    create_image_zip(saved_paths)
+    output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_zip_path = output_dir / "report.zip"
+    create_image_zip(saved_paths, output_zip_path)
 
     for path in saved_paths:
         os.remove(path)
 
     return {
         "message": f"{len(saved_paths)} image(s) processed and saved succesfully.",
+        "file_name": timestamp,
     }
 
 
-def get_zip():
-    zip_path = Path(DEFAULT_TARGET_PATH)
+def get_zip(timestamp: str):
+    zip_path = Path(DEFAULT_TARGET_PATH) / timestamp / "report.zip"
     if not zip_path.exists():
-        raise FileNotFoundError(f"ZIP file not found")
+        raise FileNotFoundError("ZIP file not found")
     return str(zip_path)
