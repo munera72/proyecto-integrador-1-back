@@ -6,37 +6,54 @@ import shutil
 import os
 from utils.img_utils import create_image_zip
 
+# Variables internas para seguimiento del progreso
+progress_status = {
+    "status": "Esperando",
+    "progress": 0
+}
+
+def set_progress(status: str, progress: int):
+    progress_status["status"] = status
+    progress_status["progress"] = progress
+
+def get_progress():
+    return progress_status
+
 
 DEFAULT_TARGET_PATH = settings.DEFAULT_TARGET_PATH
 TEMP_DIR = Path("temp_uploads")
 TEMP_DIR.mkdir(exist_ok=True)
 
+
 async def process_images(files):
     saved_paths = []
     timestamp = datetime.now().strftime("Report %d-%m-%Y %H-%M-%S")
 
-    #here we will process the images with the model, yet to implement
-    # original_images = []
-    # proccessed_images = []
+    set_progress("Iniciando", 10)
 
-    for file in files:
-            temp_filename = f"{uuid4()}_{file.filename}"
-            temp_path = TEMP_DIR / temp_filename
-            #originals_path = TEMP_DIR / "original" / temp_filename
-            #proccessed_path = TEMP_DIR / "proccessed" / temp_filename
+    for idx, file in enumerate(files):
+        temp_filename = f"{uuid4()}_{file.filename}"
+        temp_path = TEMP_DIR / temp_filename
 
-            with open(temp_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-            saved_paths.append(str(temp_path))
+        saved_paths.append(str(temp_path))
+
+        progress = 10 + int((idx + 1) / len(files) * 60)
+        set_progress("Cargando imágenes", progress)
 
     output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
     output_zip_path = output_dir / "report.zip"
+
+    set_progress("Creando archivo ZIP", 80)
     create_image_zip(saved_paths, output_zip_path)
 
     for path in saved_paths:
         os.remove(path)
+
+    set_progress("Finalizado", 90)
 
     return {
         "message": f"{len(saved_paths)} image(s) processed and saved succesfully.",

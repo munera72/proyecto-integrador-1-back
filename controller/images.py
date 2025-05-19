@@ -3,9 +3,16 @@ from typing import List
 from fastapi.responses import FileResponse
 from service.images_service import process_images
 from service.images_service import get_zip
+from service.images_service import get_progress
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/images", tags=["Images"])
 
+
+@router.get("/progress/")
+async def check_progress():
+    return get_progress()
 
 
 @router.post("/upload/")
