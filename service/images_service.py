@@ -53,7 +53,7 @@ async def process_images(files):
     for path in saved_paths:
         os.remove(path)
 
-    set_progress("Finalizado", 90)
+    set_progress("Finalizado", 100)
 
     return {
         "message": f"{len(saved_paths)} image(s) processed and saved succesfully.",
