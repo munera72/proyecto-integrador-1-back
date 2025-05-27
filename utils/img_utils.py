@@ -1,6 +1,14 @@
 import zipfile
 import os
 from config import settings
+from skimage.io import imread, imsave
+from utils.processing_methods import (
+    apply_gaussian_noise,
+    apply_random_brightness_contrast,
+    apply_random_rotation,
+    apply_horizontal_flip,
+    apply_gaussian_filter
+)
 
 
 def create_image_zip(image_paths, output_zip_path = settings.DEFAULT_TARGET_PATH):
@@ -19,3 +27,33 @@ def create_image_zip(image_paths, output_zip_path = settings.DEFAULT_TARGET_PATH
                 print(f"Warning: {image_path} does not exist and will be skipped.")
 
 
+def process_image(image_path, processed_path, processing_data):
+    """
+    Processes an image according to the specified processing method.
+    """
+    # Read the image
+    image = imread(image_path)
+    method = processing_data.get("method", "").lower()
+    print(f"processing method: {method}")
+    # Switch-like logic for processing methods
+    if method == "gaussian_noise":
+        processed_image = apply_gaussian_noise(image)
+    elif method == "random_brightness_contrast":
+        processed_image = apply_random_brightness_contrast(image)
+    elif method == "random_rotation":
+        processed_image = apply_random_rotation(image)
+    elif method == "horizontal_flip":
+        processed_image = apply_horizontal_flip(image)
+    elif method == "gaussian_filter":
+        sigma = processing_data.get("sigma", 1.0)
+        processed_image = apply_gaussian_filter(image, sigma=sigma)
+    else:
+        # If no valid method is provided, just copy the image
+        print(f"Unknown processing method '{method}'. Copying image without changes.")
+        os.rename(image_path, processed_path)
+        print(f"Processed {image_path} to {processed_path}")
+        return 
+
+    # Save the processed image
+    imsave(processed_path, processed_image)
+    print(f"Processed {image_path} to {processed_path}")

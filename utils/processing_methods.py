@@ -13,7 +13,7 @@ from skimage.filters import gaussian
 # A.HorizontalFlip(p=probs[3]),  # Apply random horizontal flip
 
 def apply_gaussian_noise(image):
-    filter = A.GaussNoise(vp=1.0)
+    filter = A.GaussNoise(p=1.0)  # Apply Gaussian noise with 100% probability
     return filter(image=image)['image']
 
 

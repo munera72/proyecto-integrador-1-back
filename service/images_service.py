@@ -4,7 +4,7 @@ from config import settings
 from uuid import uuid4
 import shutil
 import os
-from utils.img_utils import create_image_zip
+from utils.img_utils import create_image_zip, process_image
 
 # Variables internas para seguimiento del progreso
 progress_status = {
@@ -25,14 +25,15 @@ TEMP_DIR = Path("temp_uploads")
 TEMP_DIR.mkdir(exist_ok=True)
 
 
-async def process_images(files):
+async def process_images(files, processing_data=None):
     saved_paths = []
+    processed_paths = []
     timestamp = datetime.now().strftime("Report %d-%m-%Y %H-%M-%S")
 
     set_progress("Iniciando", 10)
 
     for idx, file in enumerate(files):
-        temp_filename = f"{uuid4()}_{file.filename}"
+        temp_filename = file.filename 
         temp_path = TEMP_DIR / temp_filename
 
         with open(temp_path, "wb") as buffer:
@@ -40,23 +41,44 @@ async def process_images(files):
 
         saved_paths.append(str(temp_path))
 
-        progress = 10 + int((idx + 1) / len(files) * 60)
+        progress = 10 + int((idx + 1) / len(files) * 40)
         set_progress("Cargando imágenes", progress)
+
+    # Process images according to processing_data['methods']
+    if processing_data and "methods" in processing_data:
+        for idx, method_dict in enumerate(processing_data["methods"]):
+            image_name = method_dict.get("image")
+            method = method_dict.get("method")
+            # Find the corresponding saved image path
+            img_path = next((p for p in saved_paths if Path(p).name == image_name), None)
+            if img_path:
+                processed_path = TEMP_DIR / f"processed_{Path(img_path).name}"
+                process_image(img_path, processed_path, method_dict)
+                processed_paths.append(str(processed_path))
+            else:
+                # If image not found, skip or handle error as needed
+                continue
+            progress = 50 + int((idx + 1) / len(processing_data["methods"]) * 30)
+            set_progress("Procesando imágenes", progress)
+    else:
+        processed_paths = saved_paths.copy()
 
     output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
     output_zip_path = output_dir / "report.zip"
 
-    set_progress("Creando archivo ZIP", 80)
-    create_image_zip(saved_paths, output_zip_path)
+    set_progress("Creando archivo ZIP", 90)
+    create_image_zip(processed_paths, output_zip_path)
 
-    for path in saved_paths:
-        os.remove(path)
+    # Clean up temp files
+    for path in saved_paths + processed_paths:
+        if os.path.exists(path):
+            os.remove(path)
 
     set_progress("Finalizado", 100)
 
     return {
-        "message": f"{len(saved_paths)} image(s) processed and saved succesfully.",
+        "message": f"{len(processed_paths)} image(s) processed and saved succesfully.",
         "file_name": timestamp,
     }
 
