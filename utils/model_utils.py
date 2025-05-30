@@ -49,6 +49,7 @@ def convert_masks_to_images(predicted_masks, output_dir):
 
     output_path = os.path.join(output_dir, f'mask.png')
     imsave(output_path, color_image)
+    return output_path
 
 def predict_and_save_masks(temp_folder):
     """
@@ -71,4 +72,5 @@ def predict_and_save_masks(temp_folder):
     images_batch = read_and_norm_images(image_files)
     predictions = predict_with_model(model, images_batch)
     predicted_masks = process_predictions(predictions)
-    convert_masks_to_images(predicted_masks,temp_folder)
+    mask_path = convert_masks_to_images(predicted_masks,temp_folder)
+    return mask_path
