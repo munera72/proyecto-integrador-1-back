@@ -1,9 +1,10 @@
-from tensorflow.keras.models import load_model
+from tensorflow import keras
+load_model = keras.models.load_model
 from skimage.io import imread, imsave
 import os
 import numpy as np
 
-def load_complete_model(model_path: str = '..\\models\\unet_model128_epoch_100.keras'):
+def load_complete_model(model_path: str = 'D:\\Projects\\proyecto-integrador-1-back\\models\\unet_model128_epoch_100.keras'):
     try:
         model = load_model(model_path)
         print(f"Successfully loaded model from {model_path}")
@@ -27,12 +28,27 @@ def predict_with_model(model, input_batch):
 
 def process_predictions(predictions):
     predicted_masks = np.argmax(predictions, axis=3)
+    predicted_masks = np.squeeze(predicted_masks, axis=0)
     return predicted_masks
 
 def convert_masks_to_images(predicted_masks, output_dir):
-    for i, mask in enumerate(predicted_masks):
-        output_path = os.path.join(output_dir, f'mask_{i}.png')
-        imsave(output_path, mask.astype(np.uint8))
+    color_map = {
+    0: [0, 0, 0],     # Black
+    1: [255, 0, 0],   # Red
+    2: [0, 255, 0]    # Green
+    }
+    
+    height, width = predicted_masks.shape
+    color_image = np.zeros((height, width, 3), dtype=np.uint8)
+
+    for class_index, color in color_map.items():
+        # Find all pixels in the prediction that belong to this class
+        mask = (predicted_masks == class_index)
+        # Assign the corresponding color to these pixels in the color image
+        color_image[mask] = color
+
+    output_path = os.path.join(output_dir, f'mask.png')
+    imsave(output_path, color_image)
 
 def predict_and_save_masks(temp_folder):
     """
