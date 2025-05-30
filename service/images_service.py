@@ -5,6 +5,7 @@ from uuid import uuid4
 import shutil
 import os
 from utils.img_utils import create_image_zip, process_image
+from utils.model_utils import predict_and_save_masks
 
 # Variables internas para seguimiento del progreso
 progress_status = {
@@ -62,6 +63,8 @@ async def process_images(files, processing_data=None):
             set_progress("Procesando imágenes", progress)
     else:
         processed_paths = saved_paths.copy()
+
+    predict_and_save_masks(TEMP_DIR)
 
     output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
