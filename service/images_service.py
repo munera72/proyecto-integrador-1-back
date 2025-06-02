@@ -64,13 +64,13 @@ async def process_images(files, processing_data=None):
     else:
         processed_paths = saved_paths.copy()
 
-    mask_path = predict_and_save_masks(TEMP_DIR)
+    mask_paths = predict_and_save_masks(TEMP_DIR)
 
     output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
     output_zip_path = output_dir / "report.zip"
 
-    processed_paths.append(mask_path)
+    processed_paths += mask_paths
 
     set_progress("Creando archivo ZIP", 90)
     create_image_zip(processed_paths, output_zip_path)
