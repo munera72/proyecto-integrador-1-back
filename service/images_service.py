@@ -63,6 +63,11 @@ async def process_images(files, processing_data=None):
             set_progress("Procesando imágenes", progress)
     else:
         processed_paths = saved_paths.copy()
+
+    # Clean up temp files
+    for path in saved_paths:
+        if os.path.exists(path):
+            os.remove(path)
     
     set_progress("Modelo creando predicciones",85)
 
@@ -80,7 +85,7 @@ async def process_images(files, processing_data=None):
     create_image_zip(processed_paths, output_zip_path)
 
     # Clean up temp files
-    for path in saved_paths + processed_paths:
+    for path in processed_paths:
         if os.path.exists(path):
             os.remove(path)
 

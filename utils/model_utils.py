@@ -4,7 +4,7 @@ from skimage.io import imread, imsave
 import os
 import numpy as np
 
-def load_complete_model(model_path: str = 'D:\\Projects\\proyecto-integrador-1-back\\models\\unet_model128_epoch_100.keras'):
+def load_complete_model(model_path: str = 'models\\unet_model128_epoch_100.keras'):
     try:
         model = load_model(model_path)
         print(f"Successfully loaded model from {model_path}")
