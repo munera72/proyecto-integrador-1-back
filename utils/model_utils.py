@@ -42,7 +42,7 @@ def convert_masks_to_images(predicted_masks, output_dir):
         color_image = np.zeros((height, width, 3), dtype=np.uint8)
         for class_index, color in color_map.items():
             color_image[mask == class_index] = color
-        output_path = os.path.join(output_dir, f'mask_{idx}.png')
+        output_path = os.path.join(output_dir, f'mask_{idx + 1}.png')
         imsave(output_path, color_image)
         saved_paths.append(output_path)
     return saved_paths

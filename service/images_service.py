@@ -6,6 +6,7 @@ import shutil
 import os
 from utils.img_utils import create_image_zip, process_image
 from utils.model_utils import predict_and_save_masks
+from utils.img_utils import validate_and_prepare_image
 
 # Variables internas para seguimiento del progreso
 progress_status = {
@@ -37,9 +38,8 @@ async def process_images(files, processing_data=None):
         temp_filename = file.filename 
         temp_path = TEMP_DIR / temp_filename
 
-        with open(temp_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
+        validate_and_prepare_image(file, temp_path)
+    
         saved_paths.append(str(temp_path))
 
         progress = 10 + int((idx + 1) / len(files) * 40)
@@ -63,8 +63,12 @@ async def process_images(files, processing_data=None):
             set_progress("Procesando imágenes", progress)
     else:
         processed_paths = saved_paths.copy()
+    
+    set_progress("Modelo creando predicciones",85)
 
     mask_paths = predict_and_save_masks(TEMP_DIR)
+
+    set_progress("Modelo creo predicciones",90)
 
     output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -72,7 +76,7 @@ async def process_images(files, processing_data=None):
 
     processed_paths += mask_paths
 
-    set_progress("Creando archivo ZIP", 90)
+    set_progress("Creando archivo ZIP", 95)
     create_image_zip(processed_paths, output_zip_path)
 
     # Clean up temp files

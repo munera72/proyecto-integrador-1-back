@@ -1,7 +1,9 @@
+from fastapi import HTTPException
 import zipfile
 import os
 from config import settings
 from skimage.io import imread, imsave
+from PIL import Image
 from utils.processing_methods import (
     apply_gaussian_noise,
     apply_random_brightness_contrast,
@@ -10,6 +12,31 @@ from utils.processing_methods import (
     apply_gaussian_filter
 )
 
+MAX_SIZE_MB = 10
+TARGET_SIZE = (256, 256)
+
+def validate_and_prepare_image(upload_file, save_path):
+    """
+    Valida el tamaño, formato y dimensiones de la imagen, y la guarda como PNG 256x256 si es necesario.
+    """
+
+    upload_file.file.seek(0, 2) 
+    size_mb = upload_file.file.tell() / (1024 * 1024)
+    upload_file.file.seek(0)
+    if size_mb > MAX_SIZE_MB:
+        raise HTTPException(status_code=400, detail=f"{upload_file.filename} supera los 10MB permitidos.")
+    try:
+        image = Image.open(upload_file.file)
+    except Exception:
+        raise HTTPException(status_code=400, detail=f"No se pudo abrir {upload_file.filename} como imagen.")
+
+    image = image.convert("RGB")
+
+    if image.size != TARGET_SIZE:
+        #print(f" Redimensionando {upload_file.filename} de {image.size} a {TARGET_SIZE}")
+        image = image.resize(TARGET_SIZE, Image.Resampling.LANCZOS)
+
+    image.save(save_path, format="PNG")
 
 def create_image_zip(image_paths, output_zip_path = settings.DEFAULT_TARGET_PATH):
 
