@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from controller import images  # import your route modules
+from controller import images_controller  # import your route modules
 
 
 app = FastAPI()
@@ -17,8 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(images.router)
+app.include_router(images_controller.router)
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the FastAPI app"}
+    return {"message": "Server is running"}
