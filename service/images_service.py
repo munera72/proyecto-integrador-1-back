@@ -7,6 +7,7 @@ import os
 from utils.img_utils import create_image_zip, process_image
 from utils.model_utils import predict_and_save_masks
 from utils.img_utils import validate_and_prepare_image
+from utils.pdf_utils import pdf_creation_with_images
 
 # Variables internas para seguimiento del progreso
 progress_status = {
@@ -74,12 +75,15 @@ async def process_images(files, processing_data=None):
     mask_paths = predict_and_save_masks(TEMP_DIR)
 
     set_progress("Modelo creo predicciones",90)
+    
+    pdf_output = pdf_creation_with_images(folder= TEMP_DIR )
 
     output_dir = Path(DEFAULT_TARGET_PATH) / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
     output_zip_path = output_dir / "report.zip"
 
     processed_paths += mask_paths
+    processed_paths.append(pdf_output)
 
     set_progress("Creando archivo ZIP", 95)
     create_image_zip(processed_paths, output_zip_path)
@@ -90,12 +94,10 @@ async def process_images(files, processing_data=None):
             os.remove(path)
 
     set_progress("Finalizado", 100)
-
     return {
         "message": f"{len(processed_paths)} image(s) processed and saved succesfully.",
         "file_name": timestamp,
     }
-
 
 def get_zip(timestamp: str):
     zip_path = Path(DEFAULT_TARGET_PATH) / timestamp / "report.zip"

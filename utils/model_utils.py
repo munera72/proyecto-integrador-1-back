@@ -30,7 +30,7 @@ def process_predictions(predictions):
     predicted_masks = np.argmax(predictions, axis=3)
     return predicted_masks
 
-def convert_masks_to_images(predicted_masks, output_dir):
+def convert_masks_to_images(predicted_masks, output_dir, image_files=None):
     color_map = {
         0: [0, 0, 0],     # Black
         1: [255, 0, 0],   # Red
@@ -42,7 +42,11 @@ def convert_masks_to_images(predicted_masks, output_dir):
         color_image = np.zeros((height, width, 3), dtype=np.uint8)
         for class_index, color in color_map.items():
             color_image[mask == class_index] = color
-        output_path = os.path.join(output_dir, f'mask_{idx + 1}.png')
+        if image_files and idx < len(image_files):
+            base_name = os.path.splitext(os.path.basename(image_files[idx]))[0]
+            output_path = os.path.join(output_dir, f"{base_name}_mask.png")
+        else:
+            output_path = os.path.join(output_dir, f"mask_{idx + 1}.png")
         imsave(output_path, color_image)
         saved_paths.append(output_path)
     return saved_paths
@@ -68,5 +72,5 @@ def predict_and_save_masks(temp_folder):
     images_batch = read_and_norm_images(image_files)
     predictions = predict_with_model(model, images_batch)
     predicted_masks = process_predictions(predictions)
-    mask_paths = convert_masks_to_images(predicted_masks,temp_folder)
+    mask_paths = convert_masks_to_images(predicted_masks,temp_folder, image_files)
     return mask_paths
