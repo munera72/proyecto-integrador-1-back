@@ -4,7 +4,7 @@ from PIL import Image
 
 def pdf_creation_with_images(
     folder,
-    output_dir='D:\\Projects\\proyecto-integrador-1-front\\public',
+    output_dir='',
     filename="ResultDoc.pdf",
     temp_dir='temp_uploads'
 ):
