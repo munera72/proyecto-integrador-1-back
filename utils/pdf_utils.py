@@ -4,7 +4,7 @@ from PIL import Image
 
 def pdf_creation_with_images(
     folder,
-    output_dir='',
+    output_dir='D:\\Projects\\proyecto-integrador-1-front\\public',
     filename="ResultDoc.pdf",
     temp_dir='temp_uploads'
 ):
@@ -21,6 +21,30 @@ def pdf_creation_with_images(
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.set_auto_page_break(auto=True, margin=20)
     pdf.set_font('times', '', 12)
+
+    pdf.add_page()
+    pdf.set_font('times', 'B', 16)
+    pdf.cell(0, 10, "Etiquetas RGB de las mascaras procesadas", ln=True, align='C')
+    pdf.ln(8)
+    pdf.set_font('times', '', 12)
+    pdf.cell(0, 10, "Color Negro = Fondo ( Background )", ln=True)
+    pdf.cell(0, 10, "Color Rojo = Bulk", ln=True)
+    pdf.cell(0, 10, "Color Verde = Few layer ( Area de interes )", ln=True)
+    pdf.ln(12)
+    pdf.set_font('times', 'B', 16)
+    pdf.cell(0, 10, "Margen de error del modelo", ln=True, align='C')
+    pdf.ln(8)
+    pdf.set_font('times', '', 12)
+    pdf.multi_cell(0, 10, "El margen de error se obtuvo a partir de la tabla de metricas construida por el equipo desarrollador del modelo, en este caso el margen de error es sobre la clase numero 2 ( few layer, color verde en la mascara; que es nuestra region de interes )")
+    pdf.ln(2)
+    pdf.cell(0, 10, "Margen de Error = 1 - Recall", ln=True)
+    pdf.ln(2)
+    pdf.cell(0, 10, "1 - 0.369 = 0.631", ln=True)
+    pdf.ln(2)
+    pdf.cell(0, 10, "0.631x100 = 63.1%", ln=True)
+    pdf.ln(2)
+    pdf.cell(0, 10, "el modelo falló en detectar el 63.1% de los casos de la clase 2( few layer, color verde en la mascara ).", ln=True)
+    pdf.ln(10)
 
     images = [f for f in os.listdir(folder) if not f.endswith('_mask.png') and f.lower().endswith(('.png', '.jpg', '.jpeg'))]
     images.sort()
